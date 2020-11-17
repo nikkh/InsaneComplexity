@@ -72,7 +72,7 @@ jobs:
           applicationName="${INSANE_ALIAS}"
           acrName="${applicationName}acr"
           acrPassword=$(az acr credential show -n $acrName --query passwords[0].value -o tsv)
-          encrypted_value=$(node deployment-scripts/encrypt_secret.js "$acrPassword" "$repo_public_key")
+          encrypted_value=$(node encrypt_secret.js "$acrPassword" "$repo_public_key")
           echo "encrypted_value=$encrypted_value" >> $GITHUB_ENV
           
     - id: step4
