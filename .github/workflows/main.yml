@@ -1,0 +1,53 @@
+name: Build and Deploy Insane Complexity
+on: 
+  workflow_dispatch:
+    inputs:
+      insane_Alias:
+        description: 'Insane Alias'     
+        required: true
+      
+env:
+   INSANE_ALIAS: ${{ github.event.inputs.insane_alias }}
+
+jobs:
+  job1:
+    name: Build Insane Container and push to ACR
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{env.INSANE_ALIAS}}acr.azurecr.io
+        username: ${{env.INSANE_ALIAS}}acr
+        password: ${{ secrets.ACR_PASSWORD }}
+    - run: |
+        docker build -f Dockerfile -t ${{env.INSANE_ALIAS}}acr.azurecr.io/insane/complexity:${{github.run_number}} .
+        docker push ${{env.INSANE_ALIAS}}acr.azurecr.io/insane/complexity:${{github.run_number}}
+  job2:
+    name: Associate container with web app
+    runs-on: ubuntu-latest
+    needs: [job1]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{env.INSANE_ALIAS}}acr.azurecr.io
+        username: ${{env.INSANE_ALIAS}}acr
+        password: ${{ secrets.ACR_PASSWORD }}
+    - run: |
+        az webapp config container set --docker-custom-image-name ${{env.INSANE_ALIAS}}acr.azurecr.io/insane/complexity:${{github.run_number}} \
+             --docker-registry-server-password ${{ secrets.ACR_PASSWORD }} \
+             --docker-registry-server-url https://${{env.INSANE_ALIAS}}acr.azurecr.io \
+             --docker-registry-server-user ${{env.INSANE_ALIAS}}acr \
+             --name ${{env.INSANE_ALIAS}}-web \
+             --resource-group ${{env.INSANE_ALIAS}}-rg
+
+        az webapp log config --docker-container-logging filesystem \
+             --name ${{env.INSANE_ALIAS}}-api \
+             --resource-group ${{env.INSANE_ALIAS}}-rg
