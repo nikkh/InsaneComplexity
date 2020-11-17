@@ -19,7 +19,7 @@ az webapp create \
   --name $webAppName \
   --plan $planName \
   --resource-group $rgName \
-  --deployment-container-image-name "aztechcentralacr.azurecr.io/aztechcentralweb"
+  #--deployment-container-image-name "aztechcentralacr.azurecr.io/aztechcentralweb"
   --docker-registry-server-user $acrUser \
   --docker-registry-server-password $acrPassword \
 az webapp log config --docker-container-logging filesystem  --name $webAppName --resource-group $rgName
