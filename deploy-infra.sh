@@ -24,4 +24,4 @@ az webapp create \
   --deployment-container-image-name $imageName \
   --docker-registry-server-user $acrUser \
   --docker-registry-server-password $acrPassword \
-az webapp log config --docker-container-logging filesystem  --name $webAppName --resource-group $RG_NAME
+# az webapp log config --docker-container-logging filesystem  --name $webAppName --resource-group $RG_NAME
