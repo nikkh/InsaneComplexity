@@ -36,8 +36,8 @@ jobs:
       - name: Run Deployment Scripts
         id: step3
         run: |
-                chmod +x deploy_infra.sh
-                ./deploy_infra.sh
+                chmod +x deploy-infra.sh
+                ./deploy-infra.sh
   job2:
     name: Save ACR password
     runs-on: ubuntu-latest
