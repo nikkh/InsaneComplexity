@@ -24,7 +24,7 @@ jobs:
         username: ${{env.INSANE_ALIAS}}acr
         password: ${{ secrets.ACR_PASSWORD }}
     - run: |
-        docker build -f ./Dockerfile -t ${{env.INSANE_ALIAS}}acr.azurecr.io/insane/complexity:${{github.run_number}} .
+        docker build -f InsaneComplexity/Dockerfile -t ${{env.INSANE_ALIAS}}acr.azurecr.io/insane/complexity:${{github.run_number}} .
         docker push ${{env.INSANE_ALIAS}}acr.azurecr.io/insane/complexity:${{github.run_number}}
   job2:
     name: Associate container with web app
