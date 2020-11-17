@@ -9,6 +9,7 @@ planName="${INSANE_ALIAS}-plan"
 echo "planName=$planName"
 webAppName="${INSANE_ALIAS}-web"
 echo "webAppName=$webAppName"
+imageName='insane:$(Build.BuildId)'
 echo "Creating resource group $RG_NAME in $LOCATION"
 az group create -l "$LOCATION" --n "$RG_NAME" 
 az acr create -l $LOCATION --sku basic --name $acrName --admin-enabled -g $RG_NAME
@@ -20,7 +21,7 @@ az webapp create \
   --name $webAppName \
   --plan $planName \
   --resource-group $RG_NAME \
-  #--deployment-container-image-name "aztechcentralacr.azurecr.io/aztechcentralweb"
+  --deployment-container-image-name $imageName
   --docker-registry-server-user $acrUser \
   --docker-registry-server-password $acrPassword \
 az webapp log config --docker-container-logging filesystem  --name $webAppName --resource-group $RG_NAME
