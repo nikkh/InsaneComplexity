@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "zcoSC8MS6e0/mS4F4uDMbOnRTLjYz0wqXCmxx+V+simiZSrcEzo6NwPGaXD3B2zfaXEWeR/6RfEhTjCC5QEI0A==",
+  "dgSpecHash": "6j4nvClM9D6SR7kLWEhGfepZOyxvAN7QQaifpPxwy/C2SOYl6Ju+2d2WwyoWjc7eHRS51//3oymHkBYqmO4yLA==",
   "success": true,
   "projectFilePath": "C:\\Users\\nhill\\source\\repos\\InsaneComplexity\\InsaneComplexity\\InsaneComplexity.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\nhill\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.10.9\\microsoft.visualstudio.azure.containers.tools.targets.1.10.9.nupkg.sha512"
+  ],
   "logs": []
 }
