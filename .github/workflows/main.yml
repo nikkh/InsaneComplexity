@@ -2,7 +2,7 @@ name: Build and Deploy Insane Complexity
 on: 
   workflow_dispatch:
     inputs:
-      insane_Alias:
+      insane_alias:
         description: 'Insane Alias'     
         required: true
       
