@@ -1,0 +1,100 @@
+name: Deploy Insane Infra
+
+on: 
+  workflow_dispatch:
+    inputs:
+      alias:
+        description: 'Application alias'     
+        required: true
+        default: 'zed'
+      location:
+        description: 'Location'     
+        required: true
+        default: 'uksouth'
+     
+env:
+   INSANE_PAT: ${{ secrets.INSANE_PAT }}
+   INSANE_LOCATION: ${{ github.event.inputs.location }}
+   INSANE_ALIAS: ${{ github.event.inputs.alias }}insane
+   
+jobs:
+  job1:
+    name: Create Heracles Infrastructure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        id: step1
+                    
+      - name: Login to Azure
+        uses: azure/login@v1
+        id: step2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+   
+      - name: Run Deployment Scripts
+        id: step3
+        run: |
+                chmod +x deploy_infra.sh
+                ./deploy_infra.sh
+  job2:
+    name: Save ACR password
+    runs-on: ubuntu-latest
+    needs: [job1]
+    steps:
+    - uses: actions/checkout@v2
+
+    - id: step1
+      name: Get Repo public key
+      run: |
+            #!/bin/sh -e
+            res=$(curl --location --request GET "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/secrets/public-key" \
+               --header "Authorization: Bearer $INSANE_PAT" \
+               --header 'Cookie: logged_in=no; _octo=GH1.1.1387838137.1581271944')
+            repo_public_key=$(echo $res | jq .key -r)
+            repo_public_key_id=$(echo $res | jq .key_id -r)
+            echo "repo_public_key=$repo_public_key" >> $GITHUB_ENV
+            echo "repo_public_key_id=$repo_public_key_id" >> $GITHUB_ENV
+
+    - id: step2
+      name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - id: step3
+      name: Get ACR password and Encrypt
+      run: |
+          #!/bin/sh -e
+          npm init -y
+          npm install tweetsodium
+          applicationName="${INSANE_ALIAS}"
+          acrName="${applicationName}acr"
+          acrPassword=$(az acr credential show -n $acrName --query passwords[0].value -o tsv)
+          encrypted_value=$(node deployment-scripts/encrypt_secret.js "$acrPassword" "$repo_public_key")
+          echo "encrypted_value=$encrypted_value" >> $GITHUB_ENV
+          
+    - id: step4
+      name: Store Secret
+      run: |
+           #!/bin/sh -e
+           curl_body=$(jq -n --arg key_id "$repo_public_key_id" --arg encrypted_value "$encrypted_value" '{encrypted_value: $encrypted_value, key_id: $key_id}')
+           echo "CURL_BODY=$curl_body"
+           curl --location --request PUT "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/secrets/ACR_PASSWORD" \
+            --header "Authorization: Bearer $INSANE_PAT" \
+            --header 'Content-Type: application/json' \
+            --header 'Cookie: logged_in=no; _octo=GH1.1.1387838137.1581271944' \
+            --data-raw "$curl_body"
+  job3:
+    name: Initiate Insane Deployment
+    runs-on: ubuntu-latest
+    needs: [job2]
+    steps:
+    - id: step1
+      name: Deploy Insane Microservice (Parent)
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Build and Deploy Insane Complexity
+        token: ${{ secrets.INSANE_PAT }}
+        inputs: '{ "insane_alias": "${{ env.INSANE_ALIAS }}" }'
+  
