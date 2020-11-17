@@ -14,8 +14,9 @@ on:
      
 env:
    INSANE_PAT: ${{ secrets.INSANE_PAT }}
-   INSANE_LOCATION: ${{ github.event.inputs.location }}
+   LOCATION: ${{ github.event.inputs.location }}
    INSANE_ALIAS: ${{ github.event.inputs.alias }}insane
+   RG_NAME: ${{ github.event.inputs.alias }}insane-rg
    
 jobs:
   job1:
