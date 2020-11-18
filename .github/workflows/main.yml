@@ -49,5 +49,5 @@ jobs:
              --resource-group ${{env.INSANE_ALIAS}}-rg
 
         az webapp log config --docker-container-logging filesystem \
-             --name ${{env.INSANE_ALIAS}}-api \
+             --name ${{env.INSANE_ALIAS}}-web \
              --resource-group ${{env.INSANE_ALIAS}}-rg
