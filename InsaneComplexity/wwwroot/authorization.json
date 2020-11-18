@@ -1,0 +1,9 @@
+{
+  "routes": [{
+      "path_prefix": "/Home",
+      "policies": { "unauthenticated_action": "AllowAnonymous" }
+    },{
+      "path_prefix": "/Home/Privacy",
+      "policies": { "unauthenticated_action": "RedirectToLoginPage" }
+    }]
+}
